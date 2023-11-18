@@ -1,0 +1,114 @@
+version: '3.2'
+services:
+  melkradar-adver-cluster-live-adver-0:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: melkradar-adver-cluster-live-adver-0
+    # command:
+    #         - /bin/sh
+    #         - -ec
+    #         - |
+    #           mkdir -p /usr/share/elasticsearch/data
+    #           chown 1000:1000 /usr/share/elasticsearch/data
+    environment:
+      - node.name=melkradar-adver-cluster-live-adver-0
+      - cluster.name=melkradar-adver-cluster-live-adver
+      - discovery.seed_hosts=melkradar-adver-cluster-live-adver-1,melkradar-adver-cluster-live-adver-2
+      - cluster.initial_master_nodes=melkradar-adver-cluster-live-adver-0,melkradar-adver-cluster-live-adver-1,melkradar-adver-cluster-live-adver-2
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.transport.ssl.enabled=true"
+      # - "xpack.security.transport.ssl.verification.mode=certificate"
+      # - "xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/ca/elastic-certificates.p12"
+      # - "xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/ca/elastic-certificates.p12"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+
+  melkradar-adver-cluster-live-adver-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    # command:
+    #         - /bin/sh
+    #         - -ec
+    #         - |
+    #           mkdir -p /usr/share/elasticsearch/data
+    #           chown 1000:1000 /usr/share/elasticsearch/data
+    container_name: melkradar-adver-cluster-live-adver-1
+    environment:
+      - node.name=melkradar-adver-cluster-live-adver-1
+      - cluster.name=melkradar-adver-cluster-live-adver
+      - discovery.seed_hosts=melkradar-adver-cluster-live-adver-0,melkradar-adver-cluster-live-adver-2
+      - cluster.initial_master_nodes=melkradar-adver-cluster-live-adver-0,melkradar-adver-cluster-live-adver-1,melkradar-adver-cluster-live-adver-2
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.transport.ssl.enabled=true"
+      # - "xpack.security.transport.ssl.verification.mode=certificate"
+      # - "xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/ca/elastic-certificates.p12"
+      # - "xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/ca/elastic-certificates.p12"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data02:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+  melkradar-adver-cluster-live-adver-2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    command:
+            # - chattr -R -ia /bin/sh
+            # - -ec
+            # - |
+            #   mkdir -p /usr/share/elasticsearch/data && chown -R 1000:1000 /usr/share/elasticsearch/data
+    container_name: melkradar-adver-cluster-live-adver-2
+    environment:
+      - node.name=melkradar-adver-cluster-live-adver-2
+      - cluster.name=melkradar-adver-cluster-live-adver
+      - discovery.seed_hosts=melkradar-adver-cluster-live-adver-0,melkradar-adver-cluster-live-adver-1
+      - cluster.initial_master_nodes=melkradar-adver-cluster-live-adver-0,melkradar-adver-cluster-live-adver-1,melkradar-adver-cluster-live-adver-2
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.transport.ssl.enabled=true"
+      # - "xpack.security.transport.ssl.verification.mode=certificate"
+      # - "xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/ca/elastic-certificates.p12"
+      # - "xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/ca/elastic-certificates.p12"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data03:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+  kibana-adver-kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    container_name: kibana-adver-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://melkradar-adver-cluster-live-adver-0:9200
+    ports:
+      - 5601:5601
+    networks:
+      - elastic
+
+volumes:
+  data01:
+    driver: local
+  data02:
+    driver: local
+  data03:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge
